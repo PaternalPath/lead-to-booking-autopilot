@@ -49,9 +49,30 @@ Lead → Booking Autopilot is a demonstration of an intelligent lead management 
 - **Statistics Dashboard**: View current data counts and app version
 - **Privacy**: All data stored locally with no external transmission
 
+## UI/UX Design
+
+This application features a modern, CRM-style interface with:
+
+- **Polished Components**: Custom-built reusable UI components (Button, Card, Badge, Input, Modal, etc.)
+- **Responsive Design**: Mobile-first approach with collapsible sidebar and responsive tables
+- **Consistent Spacing**: Max-width containers (7xl) with uniform padding and gaps
+- **Professional Aesthetics**: Clean typography, subtle shadows, and smooth transitions
+- **Empty States**: Helpful messages and illustrations when no data is present
+- **Loading States**: Skeleton loaders for better perceived performance
+- **Interactive Feedback**: Toast notifications, hover states, and focus indicators
+- **Accessibility**: Keyboard navigation, ARIA labels, and semantic HTML
+
+### Key UI Features
+
+- **Dashboard**: KPI cards with icons, clickable task items, linked activity feed
+- **Leads List**: Filterable table with search, responsive columns, and clear filters button
+- **Lead Detail**: Avatar header, contact info cards, inline stage editing, visual timeline
+- **Forms**: Labeled inputs with validation states and clear button variants
+- **Navigation**: Sticky sidebar with active state indicators
+
 ## Screenshots
 
-*[Placeholder for application screenshots]*
+*[Screenshots would be placed here in a deployed environment]*
 
 ## Quick Start
 

@@ -37,7 +37,9 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header title={title} onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto bg-gray-50">
+          <div className="mx-auto max-w-7xl p-6 sm:p-8">{children}</div>
+        </main>
       </div>
     </div>
   );
