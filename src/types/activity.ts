@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const ActivityTypeSchema = z.enum(["note", "call", "email", "sms", "status_change"]);
+export const ACTIVITY_TYPES = ["note", "call", "email", "sms", "status_change"] as const;
+
+export const ActivityTypeSchema = z.enum(ACTIVITY_TYPES);
 
 export type ActivityType = z.infer<typeof ActivityTypeSchema>;
 

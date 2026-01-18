@@ -78,8 +78,13 @@ export function clearWorkspace(): void {
 }
 
 export function exportWorkspace(workspace: Workspace): string {
-  const validated = WorkspaceSchema.parse(workspace);
-  return JSON.stringify(validated, null, 2);
+  try {
+    const validated = WorkspaceSchema.parse(workspace);
+    return JSON.stringify(validated, null, 2);
+  } catch (error) {
+    console.error("Failed to export workspace:", error);
+    throw new StorageError("Failed to export workspace. Invalid data.", error);
+  }
 }
 
 export function importWorkspace(jsonString: string): Workspace {

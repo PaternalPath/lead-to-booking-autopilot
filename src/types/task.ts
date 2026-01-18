@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const TaskStatusSchema = z.enum(["todo", "done"]);
+export const TASK_STATUSES = ["todo", "done"] as const;
+
+export const TaskStatusSchema = z.enum(TASK_STATUSES);
 
 export type TaskStatus = z.infer<typeof TaskStatusSchema>;
 
