@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
+import { Navigation } from "@/components/Navigation";
 
 export const metadata: Metadata = {
   title: "Lead Autopilot",
@@ -14,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <WorkspaceProvider>
+          <Navigation />
+          <main>{children}</main>
+        </WorkspaceProvider>
       </body>
     </html>
   );
