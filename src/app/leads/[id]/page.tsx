@@ -5,10 +5,12 @@ import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useRouter } from "next/navigation";
 import { nanoid } from "nanoid";
 import { format } from "date-fns";
-import { ArrowLeft, Check, Trash2, Plus } from "lucide-react";
+import { ArrowLeft, Check, Trash2, Plus, Zap } from "lucide-react";
 import Link from "next/link";
 import { LEAD_STAGE_LABELS, LeadStage } from "@/types/lead";
 import { ActivityType, ACTIVITY_TYPE_LABELS } from "@/types/activity";
+import { generateCadenceTasks, getCadenceExplanation } from "@/lib/cadence/engine";
+import { DEFAULT_CADENCE } from "@/lib/cadence/default-cadence";
 
 interface LeadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -25,6 +27,8 @@ export default function LeadDetailPage({ params }: LeadDetailPageProps) {
     getTasksByLeadId,
     addActivity,
     updateTask,
+    addTask,
+    workspace,
   } = useWorkspace();
 
   const lead = getLeadById(id);
@@ -35,6 +39,10 @@ export default function LeadDetailPage({ params }: LeadDetailPageProps) {
   const [editedLead, setEditedLead] = useState(lead);
   const [newActivityType, setNewActivityType] = useState<ActivityType>("note");
   const [newActivityBody, setNewActivityBody] = useState("");
+  const [cadenceMessage, setCadenceMessage] = useState<{
+    type: "success" | "info" | "error";
+    text: string;
+  } | null>(null);
 
   if (!lead) {
     return (
@@ -84,6 +92,51 @@ export default function LeadDetailPage({ params }: LeadDetailPageProps) {
 
   const handleToggleTask = (taskId: string, currentStatus: "todo" | "done") => {
     updateTask(taskId, { status: currentStatus === "todo" ? "done" : "todo" });
+  };
+
+  const handleGenerateCadence = () => {
+    if (!lead) return;
+
+    setCadenceMessage(null);
+
+    const result = generateCadenceTasks({
+      lead,
+      cadencePolicy: DEFAULT_CADENCE,
+      existingTasks: workspace.tasks,
+    });
+
+    if (result.stopped) {
+      setCadenceMessage({
+        type: "info",
+        text: result.reason || "Cannot generate tasks for this lead.",
+      });
+      return;
+    }
+
+    if (result.tasks.length === 0 && result.skipped > 0) {
+      setCadenceMessage({
+        type: "info",
+        text: `All ${result.skipped} tasks already exist. No new tasks created.`,
+      });
+      return;
+    }
+
+    // Add all new tasks
+    result.tasks.forEach((task) => addTask(task));
+
+    // Show success message
+    const message =
+      result.skipped > 0
+        ? `Created ${result.tasks.length} new tasks. Skipped ${result.skipped} duplicates.`
+        : `Created ${result.tasks.length} follow-up tasks!`;
+
+    setCadenceMessage({
+      type: "success",
+      text: message,
+    });
+
+    // Clear message after 5 seconds
+    setTimeout(() => setCadenceMessage(null), 5000);
   };
 
   return (
@@ -358,13 +411,51 @@ export default function LeadDetailPage({ params }: LeadDetailPageProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-zinc-900 shadow rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">
-            Tasks ({tasks.length})
-          </h2>
+          <div className="flex justify-between items-start mb-4">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
+              Tasks ({tasks.length})
+            </h2>
+            <button
+              onClick={handleGenerateCadence}
+              disabled={lead?.stage === "Booked" || lead?.stage === "Lost"}
+              className="inline-flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-zinc-300 disabled:cursor-not-allowed"
+              title={
+                lead?.stage === "Booked" || lead?.stage === "Lost"
+                  ? "Cannot generate tasks for Booked or Lost leads"
+                  : "Generate follow-up plan based on default cadence"
+              }
+            >
+              <Zap className="w-4 h-4 mr-1.5" />
+              Generate Plan
+            </button>
+          </div>
+
+          {cadenceMessage && (
+            <div
+              className={`mb-4 p-3 rounded-lg text-sm ${
+                cadenceMessage.type === "success"
+                  ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400"
+                  : cadenceMessage.type === "info"
+                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400"
+                    : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400"
+              }`}
+            >
+              {cadenceMessage.text}
+            </div>
+          )}
+
+          {lead && (lead.stage === "New" || lead.stage === "Contacted") && tasks.length === 0 && (
+            <div className="mb-4 p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-sm text-zinc-700 dark:text-zinc-300">
+              <p className="font-medium mb-1">💡 Tip: Generate a Follow-up Plan</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                {getCadenceExplanation(DEFAULT_CADENCE)}
+              </p>
+            </div>
+          )}
 
           {tasks.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center py-4">
-              No tasks yet. Generate a follow-up plan to create tasks.
+              No tasks yet. Click "Generate Plan" to create follow-up tasks.
             </p>
           ) : (
             <div className="space-y-2">
