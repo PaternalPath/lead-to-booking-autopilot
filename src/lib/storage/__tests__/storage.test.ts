@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { exportWorkspace, importWorkspace, StorageError } from "../storage";
 import { Workspace } from "@/types/workspace";
 
@@ -69,7 +69,7 @@ describe("Storage Import/Export", () => {
       const invalidWorkspace = {
         version: "not-a-number",
         leads: "not-an-array",
-      } as any;
+      } as unknown as Workspace;
 
       expect(() => exportWorkspace(invalidWorkspace)).toThrow(StorageError);
     });

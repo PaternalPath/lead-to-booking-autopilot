@@ -455,7 +455,7 @@ export default function LeadDetailPage({ params }: LeadDetailPageProps) {
 
           {tasks.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center py-4">
-              No tasks yet. Click "Generate Plan" to create follow-up tasks.
+              No tasks yet. Click &ldquo;Generate Plan&rdquo; to create follow-up tasks.
             </p>
           ) : (
             <div className="space-y-2">

@@ -129,19 +129,11 @@ test.describe("Smoke Tests", () => {
     // Click on a lead that's New or Contacted
     await page.getByText("Lisa Thompson").click();
 
-    // Count existing tasks
-    const existingTasksText = await page.getByText(/Tasks \(\d+\)/).textContent();
-    const existingTaskCount = parseInt(existingTasksText?.match(/\d+/)?.[0] || "0");
-
     // Click Generate Plan button
     await page.getByRole("button", { name: "Generate Plan" }).click();
 
     // Should show success message
     await expect(page.getByText(/Created \d+ (new )?tasks/)).toBeVisible();
-
-    // Should have more tasks now (unless all were duplicates)
-    // This is a bit tricky because demo data might already have tasks
-    // Just verify the button worked and message appeared
   });
 
   test("can view templates", async ({ page }) => {

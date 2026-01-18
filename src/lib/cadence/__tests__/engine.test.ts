@@ -3,7 +3,6 @@ import { generateCadenceTasks, getCadenceExplanation } from "../engine";
 import { Lead, LeadStage } from "@/types/lead";
 import { Task } from "@/types/task";
 import { CadencePolicy } from "@/types/cadence";
-import { addDays } from "date-fns";
 
 describe("Cadence Engine", () => {
   const mockLead: Lead = {
@@ -129,7 +128,6 @@ describe("Cadence Engine", () => {
     });
 
     it("should not create duplicates even if title, channel, and due date match", () => {
-      const baseDate = new Date("2026-01-10");
       const existingTasks: Task[] = [
         {
           id: "task-1",

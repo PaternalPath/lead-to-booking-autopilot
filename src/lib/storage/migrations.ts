@@ -1,5 +1,3 @@
-import { Workspace } from "@/types/workspace";
-
 export type Migration = (data: unknown) => unknown;
 
 export const migrations: Record<number, Migration> = {

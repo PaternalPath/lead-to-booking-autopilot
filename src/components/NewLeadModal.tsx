@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { nanoid } from "nanoid";
 import { X } from "lucide-react";
-import { Lead, LeadSchema, LeadStage, LEAD_STAGE_LABELS } from "@/types/lead";
+import { Lead, LeadSchema, LeadStage } from "@/types/lead";
 
 interface NewLeadModalProps {
   isOpen: boolean;
