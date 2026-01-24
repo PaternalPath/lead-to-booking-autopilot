@@ -1,25 +1,34 @@
 # Lead Autopilot
 
-> A local-first lead pipeline and follow-up cadence tool for travel advisors and service professionals.
+> An enterprise-ready lead pipeline and follow-up cadence tool for travel advisors and service professionals.
 
 ![Lead Autopilot Screenshot](./docs/screenshot-pipeline.png)
 
-**Lead Autopilot** helps you manage your lead pipeline, automate follow-up cadences, and never miss an opportunity. Built with privacy in mind—all your data stays on your device.
+**Lead Autopilot** helps you manage your lead pipeline, automate follow-up cadences, and never miss an opportunity. Works locally with zero setup, or connect to a database for team collaboration.
 
 ## ✨ Features
 
+### Core Features
 - **Lead Management**: Track leads from first contact through booking
 - **Visual Pipeline**: Kanban-style board with 6 stages (New → Contacted → Qualified → Proposal Sent → Booked/Lost)
 - **Smart Follow-ups**: Deterministic 5-touch cadence generates tasks automatically
 - **Templates**: Pre-written email, SMS, and call scripts ready to copy
 - **Activity Timeline**: Log notes, calls, emails, and status changes
-- **Local-First**: Zero dependencies on external APIs or servers
 - **Import/Export**: Portable JSON format for backups and migrations
 - **Demo Workspace**: Instant sample data to explore features
 
+### Enterprise Features (New!)
+- **Multi-tenant Architecture**: Organizations with team workspaces
+- **Authentication**: Email/password + OAuth (Google, GitHub)
+- **Role-Based Access**: Owner, Admin, Member roles
+- **PostgreSQL Backend**: Scalable data storage with Prisma ORM
+- **API-First Design**: RESTful API for integrations
+- **Data Migration**: Seamlessly move from local storage to cloud
+- **Structured Logging**: Production-ready observability
+
 ## 🚀 Quick Start
 
-### Development
+### Option 1: Local-First Mode (No Setup Required)
 
 ```bash
 # Install dependencies
@@ -31,21 +40,74 @@ npm run dev
 # Open http://localhost:3000
 ```
 
-### Production Build
+All data is stored in your browser's localStorage. Works completely offline!
+
+### Option 2: Enterprise Mode (With Database)
 
 ```bash
-# Build for production
-npm run build
+# Install dependencies
+npm ci
 
-# Start production server
-npm start
+# Copy environment template
+cp .env.example .env.local
+
+# Edit .env.local with your database URL and auth secrets
+# DATABASE_URL="postgresql://..."
+# NEXTAUTH_SECRET="your-secret"
+
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma db push
+
+# Run development server
+npm run dev
 ```
 
-### Load Demo Data
+## 🏢 Enterprise Setup
 
-1. Navigate to **Settings** page
-2. Click **"Load Demo Workspace"**
-3. Explore 8 sample leads across all pipeline stages
+### Environment Variables
+
+```bash
+# Database (PostgreSQL - Neon, Supabase, or self-hosted)
+DATABASE_URL="postgresql://user:password@host:5432/lead_autopilot"
+
+# Authentication
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="generate-with-openssl-rand-base64-32"
+
+# OAuth Providers (optional)
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+```
+
+### Database Schema
+
+The Prisma schema includes:
+- **Users & Accounts**: NextAuth.js compatible authentication
+- **Organizations**: Multi-tenant workspaces with member roles
+- **Leads**: Full CRM lead management
+- **Activities**: Audit trail of all interactions
+- **Tasks**: Follow-up task management
+- **Templates**: Reusable communication templates
+- **Cadence Policies**: Automated follow-up rules
+
+### API Endpoints
+
+| Endpoint | Methods | Description |
+|----------|---------|-------------|
+| `/api/auth/*` | GET, POST | NextAuth.js authentication |
+| `/api/leads` | GET, POST | List/create leads |
+| `/api/leads/[id]` | GET, PATCH, DELETE | Lead operations |
+| `/api/leads/[id]/activities` | GET, POST | Lead activities |
+| `/api/tasks` | GET, POST | List/create tasks |
+| `/api/tasks/[id]` | GET, PATCH, DELETE | Task operations |
+| `/api/templates` | GET, POST | List/create templates |
+| `/api/organizations` | GET, POST | List/create organizations |
+| `/api/migrate` | POST | Migrate localStorage to database |
 
 ## 📊 Demo Workflow (< 2 minutes)
 
@@ -59,45 +121,33 @@ npm start
 
 ## 🛠️ Technology Stack
 
-- **Framework**: Next.js 16 (App Router, React 19)
-- **Styling**: Tailwind CSS 4
-- **Validation**: Zod schemas with TypeScript
-- **Storage**: localStorage (browser-based)
-- **Icons**: Lucide React
-- **Testing**: Vitest (unit) + Playwright (E2E)
-- **Build**: Turbopack
+| Category | Technology |
+|----------|------------|
+| **Framework** | Next.js 16 (App Router, React 19) |
+| **Language** | TypeScript (strict mode) |
+| **Styling** | Tailwind CSS 4 |
+| **Database** | PostgreSQL + Prisma ORM |
+| **Authentication** | NextAuth.js (Auth.js) |
+| **Validation** | Zod schemas |
+| **Data Fetching** | SWR |
+| **Icons** | Lucide React |
+| **Testing** | Vitest (unit) + Playwright (E2E) |
+| **Build** | Turbopack |
+| **Logging** | Pino |
 
-## 📦 Import/Export
+## 🔐 Privacy & Security
 
-### Export Workspace
+### Local Mode
+- All data stored in browser localStorage
+- Zero external API calls
+- Works completely offline
 
-Navigate to **Settings** → click **"Export Workspace"**. Downloads a JSON file with all your data:
-
-```json
-{
-  "version": 1,
-  "leads": [...],
-  "activities": [...],
-  "tasks": [...],
-  "templates": [...],
-  "cadencePolicies": [...]
-}
-```
-
-### Import Workspace
-
-Navigate to **Settings** → click **"Import Workspace"** → select your JSON file.
-
-Data is validated with Zod schemas. Invalid files will show clear error messages.
-
-## 🔐 Privacy & Data Storage
-
-**Lead Autopilot is 100% local-first.** All data is stored in your browser's localStorage. Nothing is sent to external servers.
-
-- ✅ No external APIs required
-- ✅ No analytics or tracking
-- ✅ No user accounts or authentication
-- ✅ Works completely offline (after initial load)
+### Enterprise Mode
+- Data stored in your PostgreSQL database
+- JWT-based session management
+- Role-based access control
+- Audit logging for compliance
+- GDPR/CCPA friendly data portability
 
 See [docs/privacy.md](./docs/privacy.md) for full details.
 
@@ -124,19 +174,30 @@ npm run typecheck
 npm run lint
 ```
 
-## 🚢 Deploy to Vercel
+### Test Coverage
+- 68+ unit tests (Vitest)
+- 13 E2E smoke tests (Playwright)
+- Zod schema validation tests
+- API route testing ready
+
+## 🚢 Deployment
+
+### Vercel (Recommended)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/lead-to-booking-autopilot)
 
-### Manual Deployment
+**Local Mode**: No environment variables needed!
 
-1. **Import repository** into Vercel
-2. **Build Command**: `npm run build`
-3. **Output Directory**: `.next`
-4. **Environment Variables**: None required! ✨
-5. **Deploy**
+**Enterprise Mode**:
+1. Add `DATABASE_URL` (use Vercel Postgres or external)
+2. Add `NEXTAUTH_SECRET`
+3. Optionally add OAuth credentials
 
-The app requires NO environment variables and NO external services.
+### Other Platforms
+- **Railway**: Full Postgres support
+- **Render**: Web service + Postgres addon
+- **AWS**: ECS/Fargate + RDS
+- **Self-hosted**: Docker + any Postgres
 
 ## 📚 Scripts Reference
 
@@ -151,33 +212,42 @@ The app requires NO environment variables and NO external services.
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:e2e` | Run Playwright E2E tests |
 
-## 🤝 Contributing
+## 🏆 Quality Standards
 
-This is a demo project showcasing local-first architecture and Fortune-500 quality standards:
+This project demonstrates Fortune-500 quality standards:
 
 - ✅ Zero build errors
-- ✅ 100% type-safe
-- ✅ 42 unit tests passing
-- ✅ 11 E2E smoke tests
-- ✅ Fully documented
-- ✅ CI/CD ready
-- ✅ Mobile-friendly
-- ✅ Accessible (WCAG)
+- ✅ 100% type-safe (TypeScript strict)
+- ✅ 68+ tests passing
+- ✅ CI/CD pipeline (GitHub Actions)
+- ✅ Comprehensive documentation
+- ✅ Mobile-responsive design
+- ✅ Accessible (WCAG compliant)
+- ✅ Enterprise-ready architecture
+
+## 🗺️ Roadmap
+
+### Completed
+- [x] Multi-tenant organizations
+- [x] Authentication (Email + OAuth)
+- [x] PostgreSQL backend
+- [x] Role-based access control
+- [x] Data migration from localStorage
+
+### Planned
+- [ ] Drag-and-drop pipeline cards
+- [ ] Custom cadence policies editor
+- [ ] Email integration (OAuth send)
+- [ ] Calendar sync (Google, Outlook)
+- [ ] Team collaboration (real-time)
+- [ ] Advanced reporting/analytics
+- [ ] SSO/SAML support
+- [ ] Webhook integrations
 
 ## 📝 License
 
 MIT License - feel free to use this as a starting point for your own projects!
 
-## 🗺️ Roadmap (Future Ideas)
-
-- [ ] Drag-and-drop pipeline cards
-- [ ] Custom cadence policies
-- [ ] Email integration (OAuth)
-- [ ] Calendar sync
-- [ ] Multi-workspace support
-- [ ] Team collaboration features
-- [ ] Advanced reporting/analytics
-
 ---
 
-**Built with ❤️ for travel advisors and service professionals**
+**Built with enterprise quality for travel advisors and service professionals**
