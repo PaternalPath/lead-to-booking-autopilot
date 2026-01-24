@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ApiResponse } from "@/lib/api/types";
-import { ActivityType } from "@prisma/client";
+import { ApiResponse, ActivityType } from "@/lib/api/types";
 
 const ActivityCreateSchema = z.object({
   type: z.enum(["note", "call", "email", "sms", "status_change"]),

@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ApiResponse } from "@/lib/api/types";
-import { LeadStage, Prisma } from "@prisma/client";
+import { ApiResponse, LeadStage, PrismaTypes } from "@/lib/api/types";
 
 const LeadCreateSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
     const stage = searchParams.get("stage");
     const search = searchParams.get("search");
 
-    const where: Prisma.LeadWhereInput = {
+    const where: PrismaTypes.LeadWhereInput = {
       organizationId,
       ...(stage && { stage: stage as LeadStage }),
       ...(search && {

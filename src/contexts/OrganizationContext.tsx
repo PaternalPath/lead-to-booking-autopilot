@@ -24,7 +24,11 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
   const { data: session, status } = useSession();
   const [currentOrganization, setCurrentOrgState] = useState<Organization | null>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Derive loading state directly from auth status and whether data has been processed
+  // This avoids the need for setState inside useEffect
+  const isLoading = status === "loading" ||
+    (status === "authenticated" && organizations.length === 0 && !!session?.user?.organizations?.length);
 
   // Load organizations from session
   useEffect(() => {
@@ -33,13 +37,16 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     }
 
     if (status === "unauthenticated") {
-      setIsLoading(false);
       return;
     }
 
     if (session?.user?.organizations) {
       const orgs = session.user.organizations as Organization[];
-      setOrganizations(orgs);
+
+      // Only update if not already set (avoids unnecessary re-renders)
+      if (organizations.length === 0) {
+        setOrganizations(orgs);
+      }
 
       // Try to restore last selected organization
       const savedOrgId = typeof window !== "undefined"
@@ -52,14 +59,12 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
 
       const org = selectedOrg || orgs[0] || null;
 
-      if (org) {
+      if (org && !currentOrganization) {
         setCurrentOrgState(org);
         api.setOrganization(org.id);
       }
     }
-
-    setIsLoading(false);
-  }, [session, status]);
+  }, [session, status, organizations.length, currentOrganization]);
 
   const setCurrentOrganization = useCallback((org: Organization) => {
     setCurrentOrgState(org);
@@ -73,7 +78,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
   const value: OrganizationContextValue = {
     currentOrganization,
     organizations,
-    isLoading: status === "loading" || isLoading,
+    isLoading,
     setCurrentOrganization,
   };
 

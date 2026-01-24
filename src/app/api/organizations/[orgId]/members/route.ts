@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ApiResponse } from "@/lib/api/types";
-import { MemberRole } from "@prisma/client";
+import { ApiResponse, MemberRole } from "@/lib/api/types";
 import { addDays } from "date-fns";
 
 const InviteMemberSchema = z.object({

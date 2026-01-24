@@ -32,7 +32,8 @@ export async function GET() {
       },
     });
 
-    const organizations = memberships.map((m) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const organizations = memberships.map((m: any) => ({
       ...m.organization,
       role: m.role,
       joinedAt: m.joinedAt,

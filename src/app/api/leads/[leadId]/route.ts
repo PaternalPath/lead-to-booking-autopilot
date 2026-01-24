@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ApiResponse } from "@/lib/api/types";
-import { LeadStage } from "@prisma/client";
+import { ApiResponse, LeadStage } from "@/lib/api/types";
 
 const LeadUpdateSchema = z.object({
   fullName: z.string().min(1).optional(),

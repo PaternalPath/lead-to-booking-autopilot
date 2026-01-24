@@ -4,6 +4,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { OrganizationProvider } from "@/contexts/OrganizationContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { Navigation } from "@/components/Navigation";
+import { MigrationBanner } from "@/components/MigrationBanner";
 
 export const metadata: Metadata = {
   title: "Lead Autopilot",
@@ -22,6 +23,7 @@ export default function RootLayout({
           <OrganizationProvider>
             <WorkspaceProvider>
               <Navigation />
+              <MigrationBanner />
               <main>{children}</main>
             </WorkspaceProvider>
           </OrganizationProvider>

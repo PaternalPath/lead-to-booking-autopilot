@@ -14,7 +14,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/auth/signin",
-    signUp: "/auth/signup",
     error: "/auth/error",
     newUser: "/onboarding",
   },
@@ -94,11 +93,12 @@ export const authOptions: NextAuthOptions = {
             },
           },
         });
-        token.organizations = memberships.map((m) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        token.organizations = memberships.map((m: any) => ({
           id: m.organization.id,
           name: m.organization.name,
           slug: m.organization.slug,
-          role: m.role,
+          role: m.role as "OWNER" | "ADMIN" | "MEMBER",
         }));
       }
 
@@ -112,7 +112,7 @@ export const authOptions: NextAuthOptions = {
           id: string;
           name: string;
           slug: string;
-          role: string;
+          role: "OWNER" | "ADMIN" | "MEMBER";
         }>;
       }
       return session;

@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ApiResponse } from "@/lib/api/types";
-import { TaskChannel, TaskStatus } from "@prisma/client";
+import { ApiResponse, TaskChannel, TaskStatus } from "@/lib/api/types";
 
 const TaskUpdateSchema = z.object({
   title: z.string().min(1).optional(),

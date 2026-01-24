@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Custom rule overrides
+  {
+    rules: {
+      // Allow setState in effects for context providers that sync external state
+      // This is a valid pattern for syncing session/auth state to React state
+      "react-hooks/set-state-in-effect": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

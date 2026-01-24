@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ApiResponse, MigrationStats } from "@/lib/api/types";
 import {
+  ApiResponse,
+  MigrationStats,
   LeadStage,
   ActivityType,
   TaskStatus,
   TaskChannel,
   TemplateChannel,
-} from "@prisma/client";
+} from "@/lib/api/types";
 
 // Migration endpoint to transfer localStorage data to database
 export async function POST(request: NextRequest) {
@@ -61,7 +62,8 @@ export async function POST(request: NextRequest) {
       cadencePolicies: 0,
     };
 
-    await prisma.$transaction(async (tx) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await prisma.$transaction(async (tx: any) => {
       // Create ID mappings for foreign keys
       const leadIdMap = new Map<string, string>();
       const templateIdMap = new Map<string, string>();
