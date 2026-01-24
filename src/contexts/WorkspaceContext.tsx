@@ -65,53 +65,58 @@ const emptyWorkspace: Workspace = {
 };
 
 // Helper to convert API data to local types
-function convertApiLead(apiLead: Record<string, unknown>): Lead {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function convertApiLead(apiLead: any): Lead {
   return {
-    id: apiLead.id as string,
-    fullName: apiLead.fullName as string,
-    email: apiLead.email as string | undefined,
-    phone: apiLead.phone as string | undefined,
-    source: apiLead.source as string | undefined,
-    destinationOrServiceIntent: apiLead.destinationOrServiceIntent as string | undefined,
-    budgetRange: apiLead.budgetRange as string | undefined,
-    timeline: apiLead.timeline as string | undefined,
-    notes: apiLead.notes as string | undefined,
-    stage: apiLead.stage as Lead["stage"],
-    createdAt: new Date(apiLead.createdAt as string),
-    updatedAt: new Date(apiLead.updatedAt as string),
+    id: apiLead.id,
+    fullName: apiLead.fullName,
+    email: apiLead.email ?? undefined,
+    phone: apiLead.phone ?? undefined,
+    source: apiLead.source ?? undefined,
+    destinationOrServiceIntent: apiLead.destinationOrServiceIntent ?? undefined,
+    budgetRange: apiLead.budgetRange ?? undefined,
+    timeline: apiLead.timeline ?? undefined,
+    notes: apiLead.notes ?? undefined,
+    stage: apiLead.stage,
+    createdAt: new Date(apiLead.createdAt),
+    updatedAt: new Date(apiLead.updatedAt),
   };
 }
 
-function convertApiActivity(apiActivity: Record<string, unknown>): Activity {
+// Note: convertApiActivity is available for when activities are fetched per-lead
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+function convertApiActivity(apiActivity: any): Activity {
   return {
-    id: apiActivity.id as string,
-    leadId: apiActivity.leadId as string,
-    type: apiActivity.type as Activity["type"],
-    body: apiActivity.body as string,
-    createdAt: new Date(apiActivity.createdAt as string),
+    id: apiActivity.id,
+    leadId: apiActivity.leadId,
+    type: apiActivity.type,
+    body: apiActivity.body,
+    createdAt: new Date(apiActivity.createdAt),
   };
 }
 
-function convertApiTask(apiTask: Record<string, unknown>): Task {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function convertApiTask(apiTask: any): Task {
   return {
-    id: apiTask.id as string,
-    leadId: apiTask.leadId as string,
-    title: apiTask.title as string,
-    dueAt: new Date(apiTask.dueAt as string),
-    status: apiTask.status as Task["status"],
-    channel: apiTask.channel as Task["channel"],
-    templateId: apiTask.templateId as string | undefined,
+    id: apiTask.id,
+    leadId: apiTask.leadId,
+    title: apiTask.title,
+    dueAt: new Date(apiTask.dueAt),
+    status: apiTask.status,
+    channel: apiTask.channel ?? undefined,
+    templateId: apiTask.templateId ?? undefined,
   };
 }
 
-function convertApiTemplate(apiTemplate: Record<string, unknown>): Template {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function convertApiTemplate(apiTemplate: any): Template {
   return {
-    id: apiTemplate.id as string,
-    channel: apiTemplate.channel as Template["channel"],
-    name: apiTemplate.name as string,
-    subject: apiTemplate.subject as string | undefined,
-    body: apiTemplate.body as string,
-    tags: apiTemplate.tags as string[] | undefined,
+    id: apiTemplate.id,
+    channel: apiTemplate.channel,
+    name: apiTemplate.name,
+    subject: apiTemplate.subject ?? undefined,
+    body: apiTemplate.body,
+    tags: apiTemplate.tags ?? undefined,
   };
 }
 
@@ -184,9 +189,9 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       }
     : localWorkspace;
 
-  const isLoading = isAuthenticated
-    ? authStatus === "loading" || leadsLoading || tasksLoading || templatesLoading
-    : localLoading;
+  const isLoading = authStatus === "loading" || (isAuthenticated
+    ? leadsLoading || tasksLoading || templatesLoading
+    : localLoading);
 
   const error = isAuthenticated ? leadsError?.message || null : localError;
 

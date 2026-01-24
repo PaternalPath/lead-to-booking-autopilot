@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ApiResponse } from "@/lib/api/types";
-import { TaskChannel, Prisma } from "@prisma/client";
+import { ApiResponse, TaskChannel, PrismaTypes } from "@/lib/api/types";
 
 const TaskCreateSchema = z.object({
   leadId: z.string().min(1, "Lead ID is required"),
@@ -53,7 +52,7 @@ export async function GET(request: NextRequest) {
     const leadId = searchParams.get("leadId");
     const status = searchParams.get("status");
 
-    const where: Prisma.TaskWhereInput = {
+    const where: PrismaTypes.TaskWhereInput = {
       organizationId,
       ...(leadId && { leadId }),
       ...(status && { status: status as "todo" | "done" }),

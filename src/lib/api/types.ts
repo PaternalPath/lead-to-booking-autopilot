@@ -1,5 +1,3 @@
-import { Lead, Activity, Task, Template, CadencePolicy } from "@prisma/client";
-
 // API Response wrapper
 export interface ApiResponse<T> {
   data?: T;
@@ -24,7 +22,107 @@ export interface PaginationParams {
   sortOrder?: "asc" | "desc";
 }
 
-// Lead types
+// Database enum types (mirroring Prisma schema)
+export type LeadStage = "New" | "Contacted" | "Qualified" | "ProposalSent" | "Booked" | "Lost";
+export type ActivityType = "note" | "call" | "email" | "sms" | "status_change";
+export type TaskStatus = "todo" | "done";
+export type TaskChannel = "email" | "sms" | "call";
+export type TemplateChannel = "email" | "sms" | "call";
+export type MemberRole = "OWNER" | "ADMIN" | "MEMBER";
+
+// Database entity types (mirroring Prisma schema)
+export interface User {
+  id: string;
+  name: string | null;
+  email: string;
+  emailVerified: Date | null;
+  image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  logo: string | null;
+  ssoEnabled: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrganizationMember {
+  id: string;
+  userId: string;
+  organizationId: string;
+  role: MemberRole;
+  joinedAt: Date;
+}
+
+export interface Lead {
+  id: string;
+  organizationId: string;
+  fullName: string;
+  email: string | null;
+  phone: string | null;
+  source: string | null;
+  destinationOrServiceIntent: string | null;
+  budgetRange: string | null;
+  timeline: string | null;
+  notes: string | null;
+  stage: LeadStage;
+  createdAt: Date;
+  updatedAt: Date;
+  createdById: string | null;
+  updatedById: string | null;
+}
+
+export interface Activity {
+  id: string;
+  organizationId: string;
+  leadId: string;
+  type: ActivityType;
+  body: string;
+  createdAt: Date;
+}
+
+export interface Task {
+  id: string;
+  organizationId: string;
+  leadId: string;
+  title: string;
+  dueAt: Date;
+  status: TaskStatus;
+  channel: TaskChannel | null;
+  templateId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Template {
+  id: string;
+  organizationId: string;
+  channel: TemplateChannel;
+  name: string;
+  subject: string | null;
+  body: string;
+  tags: string[];
+  isSystemTemplate: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CadencePolicy {
+  id: string;
+  organizationId: string;
+  name: string;
+  rules: unknown;
+  isDefault: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Lead with counts (for list views)
 export interface LeadWithCounts extends Lead {
   _count: {
     tasks: number;
@@ -52,7 +150,7 @@ export interface LeadCreateInput {
   stage?: string;
 }
 
-export interface LeadUpdateInput extends Partial<LeadCreateInput> {}
+export type LeadUpdateInput = Partial<LeadCreateInput>;
 
 export interface ActivityCreateInput {
   type: "note" | "call" | "email" | "sms" | "status_change";
@@ -83,7 +181,7 @@ export interface TemplateCreateInput {
   tags?: string[];
 }
 
-export interface TemplateUpdateInput extends Partial<TemplateCreateInput> {}
+export type TemplateUpdateInput = Partial<TemplateCreateInput>;
 
 // Migration types
 export interface MigrationInput {
@@ -140,14 +238,41 @@ export interface MigrationStats {
   cadencePolicies: number;
 }
 
-// Re-export Prisma types
-export type {
-  Lead,
-  Activity,
-  Task,
-  Template,
-  CadencePolicy,
-  Organization,
-  User,
-  OrganizationMember,
-} from "@prisma/client";
+// Prisma-like types for API routes (when Prisma client isn't generated)
+// These provide type safety without requiring `prisma generate`
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace PrismaTypes {
+  export interface LeadWhereInput {
+    organizationId?: string;
+    stage?: LeadStage;
+    OR?: Array<{
+      fullName?: { contains: string; mode?: "insensitive" };
+      email?: { contains: string; mode?: "insensitive" };
+      phone?: { contains: string };
+    }>;
+  }
+
+  export interface TaskWhereInput {
+    organizationId?: string;
+    leadId?: string;
+    status?: TaskStatus;
+  }
+
+  export interface ActivityWhereInput {
+    organizationId?: string;
+    leadId?: string;
+    type?: ActivityType;
+  }
+
+  export interface TemplateWhereInput {
+    organizationId?: string;
+    channel?: TemplateChannel;
+    isSystemTemplate?: boolean;
+  }
+
+  export interface OrganizationMemberWhereInput {
+    organizationId?: string;
+    userId?: string;
+    role?: MemberRole;
+  }
+}

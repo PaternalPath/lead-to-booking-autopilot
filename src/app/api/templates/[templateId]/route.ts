@@ -3,8 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ApiResponse } from "@/lib/api/types";
-import { TemplateChannel } from "@prisma/client";
+import { ApiResponse, TemplateChannel } from "@/lib/api/types";
 
 const TemplateUpdateSchema = z.object({
   channel: z.enum(["email", "sms", "call"]).optional(),
