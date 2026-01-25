@@ -175,16 +175,16 @@ npm run lint
 ```
 
 ### Test Coverage
-- 68+ unit tests (Vitest)
-- 13 E2E smoke tests (Playwright)
+- 61+ unit tests (Vitest)
+- Component tests with React Testing Library
 - Zod schema validation tests
-- API route testing ready
+- E2E smoke tests (Playwright)
 
 ## 🚢 Deployment
 
 ### Vercel (Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/lead-to-booking-autopilot)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PaternalPath/lead-to-booking-autopilot)
 
 **Local Mode**: No environment variables needed!
 
@@ -218,7 +218,7 @@ This project demonstrates Fortune-500 quality standards:
 
 - ✅ Zero build errors
 - ✅ 100% type-safe (TypeScript strict)
-- ✅ 68+ tests passing
+- ✅ 61+ tests passing
 - ✅ CI/CD pipeline (GitHub Actions)
 - ✅ Comprehensive documentation
 - ✅ Mobile-responsive design
@@ -233,6 +233,8 @@ This project demonstrates Fortune-500 quality standards:
 - [x] PostgreSQL backend
 - [x] Role-based access control
 - [x] Data migration from localStorage
+- [x] User onboarding flow
+- [x] Component testing with React Testing Library
 
 ### Planned
 - [ ] Drag-and-drop pipeline cards
