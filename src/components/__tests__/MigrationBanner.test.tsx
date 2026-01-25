@@ -11,39 +11,44 @@ vi.mock("@/contexts/WorkspaceContext", () => ({
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 const mockedUseWorkspace = vi.mocked(useWorkspace);
 
+// Helper to create mock return value with proper typing
+function createMockWorkspace(overrides: {
+  isAuthenticated: boolean;
+  hasLocalData: boolean;
+}) {
+  return {
+    ...overrides,
+    migrateToCloud: mockMigrateToCloud,
+  } as unknown as ReturnType<typeof useWorkspace>;
+}
+
 describe("MigrationBanner", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("should not render when user is not authenticated", () => {
-    mockedUseWorkspace.mockReturnValue({
-      isAuthenticated: false,
-      hasLocalData: true,
-      migrateToCloud: mockMigrateToCloud,
-    } as ReturnType<typeof useWorkspace>);
+    mockedUseWorkspace.mockReturnValue(
+      createMockWorkspace({ isAuthenticated: false, hasLocalData: true })
+    );
 
     const { container } = render(<MigrationBanner />);
     expect(container.firstChild).toBeNull();
   });
 
   it("should not render when there is no local data", () => {
-    mockedUseWorkspace.mockReturnValue({
-      isAuthenticated: true,
-      hasLocalData: false,
-      migrateToCloud: mockMigrateToCloud,
-    } as ReturnType<typeof useWorkspace>);
+    mockedUseWorkspace.mockReturnValue(
+      createMockWorkspace({ isAuthenticated: true, hasLocalData: false })
+    );
 
     const { container } = render(<MigrationBanner />);
     expect(container.firstChild).toBeNull();
   });
 
   it("should render when user is authenticated and has local data", () => {
-    mockedUseWorkspace.mockReturnValue({
-      isAuthenticated: true,
-      hasLocalData: true,
-      migrateToCloud: mockMigrateToCloud,
-    } as ReturnType<typeof useWorkspace>);
+    mockedUseWorkspace.mockReturnValue(
+      createMockWorkspace({ isAuthenticated: true, hasLocalData: true })
+    );
 
     render(<MigrationBanner />);
 
@@ -55,11 +60,9 @@ describe("MigrationBanner", () => {
   });
 
   it("should dismiss when dismiss button is clicked", () => {
-    mockedUseWorkspace.mockReturnValue({
-      isAuthenticated: true,
-      hasLocalData: true,
-      migrateToCloud: mockMigrateToCloud,
-    } as ReturnType<typeof useWorkspace>);
+    mockedUseWorkspace.mockReturnValue(
+      createMockWorkspace({ isAuthenticated: true, hasLocalData: true })
+    );
 
     render(<MigrationBanner />);
 
@@ -76,11 +79,9 @@ describe("MigrationBanner", () => {
       message: "Successfully migrated 5 leads",
     });
 
-    mockedUseWorkspace.mockReturnValue({
-      isAuthenticated: true,
-      hasLocalData: true,
-      migrateToCloud: mockMigrateToCloud,
-    } as ReturnType<typeof useWorkspace>);
+    mockedUseWorkspace.mockReturnValue(
+      createMockWorkspace({ isAuthenticated: true, hasLocalData: true })
+    );
 
     render(<MigrationBanner />);
 
@@ -101,11 +102,9 @@ describe("MigrationBanner", () => {
     );
     mockMigrateToCloud.mockReturnValue(migrationPromise);
 
-    mockedUseWorkspace.mockReturnValue({
-      isAuthenticated: true,
-      hasLocalData: true,
-      migrateToCloud: mockMigrateToCloud,
-    } as ReturnType<typeof useWorkspace>);
+    mockedUseWorkspace.mockReturnValue(
+      createMockWorkspace({ isAuthenticated: true, hasLocalData: true })
+    );
 
     render(<MigrationBanner />);
 
@@ -131,11 +130,9 @@ describe("MigrationBanner", () => {
       message: "Network error",
     });
 
-    mockedUseWorkspace.mockReturnValue({
-      isAuthenticated: true,
-      hasLocalData: true,
-      migrateToCloud: mockMigrateToCloud,
-    } as ReturnType<typeof useWorkspace>);
+    mockedUseWorkspace.mockReturnValue(
+      createMockWorkspace({ isAuthenticated: true, hasLocalData: true })
+    );
 
     render(<MigrationBanner />);
 
